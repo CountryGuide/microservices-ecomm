@@ -1,13 +1,13 @@
-import { CustomError } from './CustomError';
+import { CustomError } from './CustomError'
 
 export class NotFoundError extends CustomError {
-  statusCode = 404;
+  statusCode = 404
   constructor() {
-    super('Page not found');
+    super('Page not found')
 
-    Object.setPrototypeOf(this, NotFoundError.prototype);
+    Object.setPrototypeOf(this, NotFoundError.prototype)
   }
   serializeErrors() {
-    return [{ message: 'Page not found' }];
+    return [{ message: 'Page not found' }]
   }
 }

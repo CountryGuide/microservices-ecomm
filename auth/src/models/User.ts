@@ -1,18 +1,18 @@
-import mongoose from 'mongoose';
-import { Password } from '../services/password';
+import mongoose from 'mongoose'
+import { Password } from '../services/password'
 
 interface UserAttrs {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 interface UserModel extends mongoose.Model<UserDocument> {
-  build(attrs: UserAttrs): UserDocument;
+  build(attrs: UserAttrs): UserDocument
 }
 
 interface UserDocument extends mongoose.Document {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 const userSchema = new mongoose.Schema(
@@ -29,27 +29,27 @@ const userSchema = new mongoose.Schema(
   {
     toJSON: {
       transform(doc, ret) {
-        ret.id = doc._id;
-        delete ret.password;
-        delete ret.__v;
-        delete ret._id;
+        ret.id = doc._id
+        delete ret.password
+        delete ret.__v
+        delete ret._id
       },
     },
   }
-);
+)
 
 userSchema.pre('save', async function (done) {
   if (this.isModified('password')) {
-    const hashed = await Password.toHash(this.get('password'));
-    this.set('password', hashed);
+    const hashed = await Password.toHash(this.get('password'))
+    this.set('password', hashed)
   }
-  done();
-});
+  done()
+})
 
 userSchema.statics.build = (attrs: UserAttrs) => {
-  return new User(attrs);
-};
+  return new User(attrs)
+}
 
-const User = mongoose.model<UserDocument, UserModel>('User', userSchema);
+const User = mongoose.model<UserDocument, UserModel>('User', userSchema)
 
-export { User };
+export { User }
