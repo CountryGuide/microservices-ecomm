@@ -1,10 +1,9 @@
 import express, { Request, Response } from 'express'
 import { body } from 'express-validator'
 import jwt from 'jsonwebtoken'
+import { BadRequestError, validateRequest } from '@countryguide/common'
 
 import { UserAPI } from '../API'
-import { BadRequestError } from '../errors/BadRequestError'
-import { validateRequest } from '../middlewares/validateRequest'
 import { User } from '../models/User'
 
 const router = express.Router()

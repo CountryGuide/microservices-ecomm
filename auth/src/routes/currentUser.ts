@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { UserAPI } from '../API'
-import { currentUser } from '../middlewares/currentUser'
+import { currentUser } from '@countryguide/common'
 
 const router = express.Router()
 
