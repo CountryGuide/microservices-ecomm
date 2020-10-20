@@ -3,7 +3,7 @@ import Router from 'next/router'
 import { UserAPI } from 'API/users'
 import { useRequest } from 'hooks/useRequest'
 
-export default () => {
+export default function SignUpPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { doRequest, errors } = useRequest(UserAPI.signUp, 'post', { email, password }, () => Router.push('/'))
