@@ -1,0 +1,5 @@
+Создание секретки для JWT
+kubectl create secret generic jwt-secret --from-literal=JWT_KEY=<JWT_KEY>
+
+Запуск NGINX
+kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
