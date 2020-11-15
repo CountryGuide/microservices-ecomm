@@ -1,6 +1,5 @@
 import express, { Request, Response } from 'express'
 import { TicketsAPI } from '../API'
-import { body } from 'express-validator'
 import { Ticket } from '../models/Ticket'
 
 const router = express.Router()

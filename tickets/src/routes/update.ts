@@ -3,11 +3,13 @@ import { TicketsAPI } from '../API'
 import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@countryguide/common'
 import { body } from 'express-validator'
 import { Ticket } from '../models/Ticket'
+import { natsWrapper } from '../NatsWrapper'
+import { TicketUpdatedPublisher } from '../events/publishers/TicketUpdatedPublisher'
 
 const router = express.Router()
 
 router.put(
-  TicketsAPI.withId({id: ':id'}),
+  TicketsAPI.withId({ id: ':id' }),
   requireAuth,
   [
     body('title').not().isEmpty().withMessage('You must provide a title'),
@@ -27,13 +29,20 @@ router.put(
 
     ticket.set({
       title: req.body.title,
-      price: req.body.price
+      price: req.body.price,
     })
 
     await ticket.save()
+
+    await new TicketUpdatedPublisher(natsWrapper.stan).publish({
+      id: ticket.id,
+      price: ticket.price,
+      title: ticket.title,
+      userId: ticket.userId,
+    })
 
     res.send(ticket)
   }
 )
 
-export { router as updateTicketRouter}
+export { router as updateTicketRouter }

@@ -1,8 +1,7 @@
 import express, { Request, Response } from 'express'
 import { TicketsAPI } from '../API'
 import { Ticket } from '../models/Ticket'
-import { NotFoundError, requireAuth, validateRequest } from '@countryguide/common'
-import { body } from 'express-validator'
+import { NotFoundError } from '@countryguide/common'
 
 
 const router = express.Router()

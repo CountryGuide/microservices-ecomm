@@ -3,6 +3,8 @@ import { TicketsAPI } from '../API'
 import { requireAuth, validateRequest } from '@countryguide/common'
 import { body } from 'express-validator'
 import { Ticket } from '../models/Ticket'
+import { TicketCreatedPublisher } from '../events/publishers/TicketCreatedPublisher'
+import { natsWrapper } from '../NatsWrapper'
 
 const router = express.Router()
 
@@ -15,11 +17,18 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const {title, price} = req.body
+    const { title, price } = req.body
 
-    const ticket = Ticket.build({title, price, userId: req.currentUser!.id})
+    const ticket = Ticket.build({ title, price, userId: req.currentUser!.id })
 
     await ticket.save()
+
+    await new TicketCreatedPublisher(natsWrapper.stan).publish({
+      id: ticket.id,
+      price: ticket.price,
+      title: ticket.title,
+      userId: ticket.userId,
+    })
 
     res.status(201).send(ticket)
   }
