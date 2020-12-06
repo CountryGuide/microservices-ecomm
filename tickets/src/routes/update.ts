@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express'
 import { TicketsAPI } from '../API'
-import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError } from '@countryguide/common'
+import { requireAuth, validateRequest, NotFoundError, NotAuthorizedError, BadRequestError } from '@countryguide/common'
 import { body } from 'express-validator'
 import { Ticket } from '../models/Ticket'
 import { natsWrapper } from '../NatsWrapper'
@@ -23,6 +23,10 @@ router.put(
       throw new NotFoundError()
     }
 
+    if (ticket.orderId) {
+      throw new BadRequestError('Ticket is reserved and cannot be changed')
+    }
+
     if (ticket.userId !== req.currentUser!.id) {
       throw new NotAuthorizedError()
     }
@@ -39,6 +43,7 @@ router.put(
       price: ticket.price,
       title: ticket.title,
       userId: ticket.userId,
+      version: ticket.version,
     })
 
     res.send(ticket)
