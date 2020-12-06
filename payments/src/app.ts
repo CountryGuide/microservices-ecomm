@@ -4,6 +4,7 @@ import { json } from 'body-parser'
 import cookieSession from 'cookie-session'
 
 import { currentUser, errorHandler, NotFoundError } from '@countryguide/common'
+import { createChargeRouter } from './routes/new'
 
 const app = express()
 app.set('trust proxy', 1)
@@ -16,6 +17,8 @@ app.use(
   })
 )
 app.use(currentUser)
+
+app.use(createChargeRouter)
 
 app.get('*', () => {
   throw new NotFoundError()
