@@ -9,6 +9,10 @@ import {
 } from '@countryguide/common'
 import { body } from 'express-validator'
 import { Order } from '../models/Order'
+import { stripe } from '../stripe'
+import { Payment } from '../models/Payment'
+import { PaymentCreatedPublisher } from '../events/publishers/PaymentCreatedPublisher'
+import { natsWrapper } from '../NatsWrapper'
 
 const router = express.Router()
 
@@ -33,6 +37,27 @@ router.post(
     if (order.status === OrderStatus.Cancelled) {
       throw new BadRequestError('Order is cancelled')
     }
+
+    const charge = await stripe.charges.create({
+      currency: 'RUB',
+      amount: order.price * 100,
+      source: token,
+    })
+
+    const payment = Payment.build({
+      orderId,
+      stripeId: charge.id,
+    })
+
+    await payment.save()
+
+    await new PaymentCreatedPublisher(natsWrapper.stan).publish({
+      id: payment.id,
+      orderId: payment.orderId,
+      stripeId: payment.stripeId,
+    })
+
+    res.status(201).send(payment)
   }
 )
 
